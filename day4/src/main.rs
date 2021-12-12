@@ -96,8 +96,11 @@ impl Grid {
     }
 
     pub fn unmarked_sum(&self) -> u32 {
-	self.numbers.iter().filter(|val| !val.is_marked()).map(|val| val.value() as u32).sum()
-
+        self.numbers
+            .iter()
+            .filter(|val| !val.is_marked())
+            .map(|val| val.value() as u32)
+            .sum()
     }
 }
 
@@ -154,21 +157,19 @@ mod test_grid {
             grid.check_number(number);
         }
         assert!(grid.is_bingo());
-	assert_eq!(grid.unmarked_sum(), 260);
+        assert_eq!(grid.unmarked_sum(), 260);
     }
 }
 
 fn parse(filename: &str) -> (Vec<usize>, Vec<Grid>) {
-    let content = fs::read_to_string(filename)
-        .expect("can't read input");
+    let content = fs::read_to_string(filename).expect("can't read input");
     let lines = content
         .lines()
         .filter(|current| !current.is_empty())
         .map(|val| val.clone())
         .collect::<Vec<&str>>();
 
-    let numbers: Vec<usize> =
-     lines[0]
+    let numbers: Vec<usize> = lines[0]
         .split(',')
         .map(|val| val.parse::<usize>().unwrap())
         .collect::<Vec<usize>>();
@@ -177,12 +178,17 @@ fn parse(filename: &str) -> (Vec<usize>, Vec<Grid>) {
     let mut grids: Vec<Grid> = Vec::new();
 
     for line in lines.iter().skip(1) {
-	let mut foo: Vec<&str> = line.split(' ').filter(|val| val != &"").collect::<Vec<&str>>();
-	tmp.append(&mut foo);
-	if tmp.len() < 25 { continue ;}
-	let grid = Grid::new(tmp.clone());
-	grids.push(grid);
-	tmp = Vec::new();
+        let mut foo: Vec<&str> = line
+            .split(' ')
+            .filter(|val| val != &"")
+            .collect::<Vec<&str>>();
+        tmp.append(&mut foo);
+        if tmp.len() < 25 {
+            continue;
+        }
+        let grid = Grid::new(tmp.clone());
+        grids.push(grid);
+        tmp = Vec::new();
     }
     return (numbers, grids);
 }
@@ -191,26 +197,27 @@ fn main() {
     let (numbers, mut grids) = parse("input");
 
     'outer: for number in numbers {
-	for grid in grids.iter_mut() {
-	    grid.check_number(number);
-	    if grid.is_bingo() {
-		println!("part1 {}", number as u32 * grid.unmarked_sum());
-		break 'outer;
-
-	    }
-	}
+        for grid in grids.iter_mut() {
+            grid.check_number(number);
+            if grid.is_bingo() {
+                println!("part1 {}", number as u32 * grid.unmarked_sum());
+                break 'outer;
+            }
+        }
     }
 
     let mut score: u32 = 0;
     let (numbers, mut grids) = parse("input");
     for number in numbers {
-	for grid in grids.iter_mut() {
-	    if grid.is_bingo() {continue}
-	    grid.check_number(number);
-	    if grid.is_bingo() {
-		score =  number as u32 * grid.unmarked_sum();
-	    }
-	}
+        for grid in grids.iter_mut() {
+            if grid.is_bingo() {
+                continue;
+            }
+            grid.check_number(number);
+            if grid.is_bingo() {
+                score = number as u32 * grid.unmarked_sum();
+            }
+        }
     }
     println!("part2 {}", score);
 }
